@@ -1,0 +1,30 @@
+{
+  "name": "obminua",
+  "version": "1.0.0",
+  "description": "README",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.2.0",
+    "currency-codes": "^2.1.0",
+    "dotenv": "^8.2.0",
+    "telegraf": "^3.38.0",
+    "unix-timestamp": "^1.0.2"
+  },
+  "engines": {
+    "node": "12.21.0",
+    "nodemon": "2.0.4"
+  },
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eboko1/ObminUA.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eboko1/ObminUA/issues"
+  },
+  "homepage": "https://github.com/eboko1/ObminUA#readme"
+}

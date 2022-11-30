@@ -17,36 +17,42 @@ bot.start(ctx =>{
 
 bot.help((ctx) => ctx.reply(COUNTRIES_LIST));
 
-bot.hears(/^[A-Z]+$/i, async (ctx) => {
+bot.hears(/^[A-Z][a-z]+$/i, async (ctx) => {
   const enteredText = ctx.message.text;
   const currency = currency_codes.code(enteredText) 
   if(!currency){
     return ctx.reply('Валюту не знайдено')
   }
   try {
-    const currencyObj = await axios.get(process.env.API_MONOBANK)
-    const foundCurrency = currencyObj.data.find((cur)=>{
+    const currencyObjMonoBank = await axios.get(process.env.API_MONOBANK)
+    const currencyObjPrivateBank = await axios.get(process.env.API_PRIVATEBANK)
+  
+    const foundCurrencyMonoBank = currencyObjMonoBank.data.find((cur)=>{
       return cur.currencyCodeA.toString() === currency.number;
     }) 
-    if(!foundCurrency){
+
+    const foundCurrencPrivateBank = currencyObjPrivateBank.data.find((cur)=>{
+      return cur.ccy === enteredText;
+    }) 
+
+    if(!foundCurrencyMonoBank ){
       return ctx.reply('Валюту не знайдено')
     }
-     //return ctx.reply(foundCurrency)
-
      return ctx.replyWithMarkdown(`
-     Валюта: *${currency.code}*,
-     Продаж: *${foundCurrency.rateSell}*,
-     Купівля: *${foundCurrency.rateBuy}*,
-     
+     Валюта: *${currency.code}/UAH*, 
+     **Monobank** ⋅ *${foundCurrencyMonoBank.rateBuy}*/*${foundCurrencyMonoBank.rateSell}*
+     **ПриватБанк** ⋅ *${foundCurrencPrivateBank.buy}*/*${foundCurrencPrivateBank.sale}*
      `)
   } catch (error) {
     console.log(error)
-    return ctx.reply('Спробуй ще раз')
+    return ctx.reply('Спробуй ввести ще раз')
   }
 
 })
 
-bot.on('text', async (ctx) => {});
+bot.on('text', async (ctx) => {
+
+});
  
 bot.launch();
 

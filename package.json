@@ -7,7 +7,7 @@
     "axios": "^1.2.0",
     "currency-codes": "^2.1.0",
     "dotenv": "^8.2.0",
-    "node-fetch": "^3.3.0",
+    "node-fetch": "^2.6.7",
     "telegraf": "^3.38.0",
     "unix-timestamp": "^1.0.2"
   },

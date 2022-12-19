@@ -1,0 +1,6 @@
+version: '16.13.1'
+services:
+  worker:
+    build: .
+    environment:
+      - BOT_TOKEN=$BOT_TOKEN

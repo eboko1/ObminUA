@@ -1,5 +1,0 @@
-services:
-  worker:
-    build: .
-    environment:
-      - BOT_TOKEN: $BOT_TOKEN

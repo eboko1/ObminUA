@@ -66,19 +66,33 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
           }) 
          
           if(enteredText == 'EUR'){
+            let monoRate = foundCurrencyMonoBank.rateBuy;
+            let monoSale = foundCurrencyMonoBank.rateSell;
+            let privRate = parseFloat(foundCurrencPrivateBank.buy);
+            let privSale = parseFloat(foundCurrencPrivateBank.sale);
+
+
             formatInfo =`
-            Валюта: *${currency.code}💶/UAH*, 
-                         Купівля / Продаж
-            **Monobank** ⋅ *${foundCurrencyMonoBank.rateBuy}* / *${foundCurrencyMonoBank.rateSell}* 🇺🇦
-            **ПриватБанк** ⋅ *${foundCurrencPrivateBank.buy}* / *${foundCurrencPrivateBank.sale}* 🇺🇦
-            `   
-          } else{
+                  Валюта: *💶${currency.code}/UAH*, 
+                              Купівля / Продаж
+                  **Monobank   ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+                  **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
+                  `   
+          }
+          
+          if(enteredText == 'USD'){
+            let monoRate = foundCurrencyMonoBank.rateBuy;
+            let monoSale = foundCurrencyMonoBank.rateSell;
+            let privRate = parseFloat(foundCurrencPrivateBank.buy);
+            let privSale = parseFloat(foundCurrencPrivateBank.sale);
+
+
             formatInfo =`
-            Валюта: *${currency.code}💵/UAH*,
-                          Купівля / Продаж
-            **Monobank** ⋅ *${foundCurrencyMonoBank.rateBuy}* / *${foundCurrencyMonoBank.rateSell}* 🇺🇦
-            **ПриватБанк** ⋅ *${foundCurrencPrivateBank.buy}* / *${foundCurrencPrivateBank.sale}* 🇺🇦
-            `  
+                Валюта: *💵${currency.code}/UAH*, 
+                            Купівля / Продаж
+                **Monobank   ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+                **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
+                ` 
           }
           ctx.replyWithMarkdown(formatInfo);
       } catch (error) {

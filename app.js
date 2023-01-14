@@ -73,49 +73,39 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
         const foundCurrencPrivateBank = currencyObjPrivateBank.data.find((cur)=>{
           return cur.ccy === enteredText;
         }) 
+
+        if(enteredText == 'EUR'){
+            let monoRate = foundCurrencyMonoBank.rateBuy;
+            let monoSale = foundCurrencyMonoBank.rateSell;
+            let privRate = parseFloat(foundCurrencPrivateBank.buy);
+            let privSale = parseFloat(foundCurrencPrivateBank.sale);
+            formatInfo =
+            `
+            Валюта: *💶${currency.code}/UAH*, 
+              Купівля / Продаж
+            **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+            **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
+            `   
+        }
+        
+        if(enteredText == 'USD'){
+          let monoRate = foundCurrencyMonoBank.rateBuy;
+          let monoSale = foundCurrencyMonoBank.rateSell;
+          let privRate = parseFloat(foundCurrencPrivateBank.buy);
+          let privSale = parseFloat(foundCurrencPrivateBank.sale);
+          formatInfo =
+            ` Валюта: *💵${currency.code}/UAH*, 
+              Купівля / Продаж
+            **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+            **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
+            ` 
+        }
+        ctx.replyWithMarkdown(formatInfo);
+
        } catch (error) {
         ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
         console.log(error)
        }
-      
-         
-          if(enteredText == 'EUR'){
-            try {
-              let monoRate = foundCurrencyMonoBank.rateBuy;
-              let monoSale = foundCurrencyMonoBank.rateSell;
-              let privRate = parseFloat(foundCurrencPrivateBank.buy);
-              let privSale = parseFloat(foundCurrencPrivateBank.sale);
-              formatInfo =
-              `
-              Валюта: *💶${currency.code}/UAH*, 
-                Купівля / Продаж
-              **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
-              **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
-              `   
-            } catch (error) {
-              ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
-              console.log(error)
-            }
-          }
-          
-          try {
-            if(enteredText == 'USD'){
-              let monoRate = foundCurrencyMonoBank.rateBuy;
-              let monoSale = foundCurrencyMonoBank.rateSell;
-              let privRate = parseFloat(foundCurrencPrivateBank.buy);
-              let privSale = parseFloat(foundCurrencPrivateBank.sale);
-              formatInfo =
-                ` Валюта: *💵${currency.code}/UAH*, 
-                  Купівля / Продаж
-                **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
-                **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
-                ` 
-            }
-          } catch (error) {
-            ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
-            console.log(error)
-          }
-          ctx.replyWithMarkdown(formatInfo);
     }
     
     if (ctx.message.text == 'НБУ'){

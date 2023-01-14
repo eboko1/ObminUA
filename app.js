@@ -26,22 +26,31 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
     const dataK = await fetch(process.env.NBY)
     .then(res => res.json())
     .then(data3 => {
+        let usdNum = data3[24];
+        let eurNum = data3[31];
+        let czkNum = data3[21];
+        let chfNum = data3[3];
 
+        let usdSum = parseFloat(JSON.stringify(usdNum.rate))*enteredInt;  
+        let eurSum = parseFloat(JSON.stringify(eurNum.rate))*enteredInt;  
+        let czkSum = parseFloat(JSON.stringify(czkNum.rate))*enteredInt;  
+        let chfSum = parseFloat(JSON.stringify(chfNum.rate))*enteredInt;  
 
-      let usd = parseFloat(JSON.stringify(data3[25].rate))*enteredInt;
-      let eur = parseFloat(JSON.stringify(data3[32].rate))*enteredInt;
-      let czk = parseFloat(JSON.stringify(data3[22].rate))*enteredInt;
-      let chf = parseFloat(JSON.stringify(data3[4].rate))*enteredInt;
+        let usdName = JSON.stringify(usdNum.cc);
+        let eurName = JSON.stringify(eurNum.cc);
+        let czkName = JSON.stringify(czkNum.cc);
+        let chfName = JSON.stringify(chfNum.cc);
 
-      formatInfo = `Курс НБУ на *${JSON.stringify(data3[25].exchangedate)}*     
+      formatInfo = `Курс НБУ на *${JSON.stringify(data3[25].exchangedate)}*    
 
-            ${enteredInt} ${JSON.stringify(data3[25].cc)} -> 🇺🇦 *${usd.toFixed(2)}*
-            ${enteredInt} ${JSON.stringify(data3[32].cc)} -> 🇺🇦 *${eur.toFixed(2)}*
-            ${enteredInt} ${JSON.stringify(data3[22].cc)} -> 🇺🇦 *${czk.toFixed(2)}*
-            ${enteredInt} ${JSON.stringify(data3[4].cc)} -> 🇺🇦 *${chf.toFixed(2)}*
-                `
+        ${enteredInt} ${usdName} -> 🇺🇦 *${usdSum.toFixed(2)}*
+        ${enteredInt} ${eurName} -> 🇺🇦 *${eurSum.toFixed(2)}*
+        ${enteredInt} ${czkName} -> 🇺🇦 *${czkSum.toFixed(2)}*
+        ${enteredInt} ${chfName} -> 🇺🇦 *${chfSum.toFixed(2)}*
+        `
+        console.log('',formatInfo)
       return ctx.replyWithMarkdown(formatInfo);
-
+      
     })         
     .catch(error => console.log(error))
   })
@@ -53,68 +62,78 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
     
     if((enteredText == 'EUR') || (enteredText == 'USD') ){ // 💶  💵
       const currency = currency_codes.code(enteredText) 
-        try {
-          const currencyObjMonoBank = await axios.get(process.env.API_MONOBANK)
-          const currencyObjPrivateBank = await axios.get(process.env.API_PRIVATEBANK)
-   
-          const foundCurrencyMonoBank = currencyObjMonoBank.data.find((cur)=>{
-              return cur.currencyCodeA.toString() === currency.number;
-          }) 
-          // get data with PrіvateBank
-          const foundCurrencPrivateBank = currencyObjPrivateBank.data.find((cur)=>{
-            return cur.ccy === enteredText;
-          }) 
+       try {
+        const currencyObjMonoBank = await axios.get(process.env.API_MONOBANK)
+        const currencyObjPrivateBank = await axios.get(process.env.API_PRIVATEBANK)
+ 
+        const foundCurrencyMonoBank = currencyObjMonoBank.data.find((cur)=>{
+            return cur.currencyCodeA.toString() === currency.number;
+        }) 
+        // get data with PrіvateBank
+        const foundCurrencPrivateBank = currencyObjPrivateBank.data.find((cur)=>{
+          return cur.ccy === enteredText;
+        }) 
+       } catch (error) {
+        ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
+        console.log(error)
+       }
+      
          
           if(enteredText == 'EUR'){
-            let monoRate = foundCurrencyMonoBank.rateBuy;
-            let monoSale = foundCurrencyMonoBank.rateSell;
-            let privRate = parseFloat(foundCurrencPrivateBank.buy);
-            let privSale = parseFloat(foundCurrencPrivateBank.sale);
-
-
-            formatInfo =`
-                  Валюта: *💶${currency.code}/UAH*, 
-                              Купівля / Продаж
-                  **Monobank   ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
-                  **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
-                  `   
+            try {
+              let monoRate = foundCurrencyMonoBank.rateBuy;
+              let monoSale = foundCurrencyMonoBank.rateSell;
+              let privRate = parseFloat(foundCurrencPrivateBank.buy);
+              let privSale = parseFloat(foundCurrencPrivateBank.sale);
+              formatInfo =
+              `
+              Валюта: *💶${currency.code}/UAH*, 
+                Купівля / Продаж
+              **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+              **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
+              `   
+            } catch (error) {
+              ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
+              console.log(error)
+            }
           }
           
-          if(enteredText == 'USD'){
-            let monoRate = foundCurrencyMonoBank.rateBuy;
-            let monoSale = foundCurrencyMonoBank.rateSell;
-            let privRate = parseFloat(foundCurrencPrivateBank.buy);
-            let privSale = parseFloat(foundCurrencPrivateBank.sale);
-
-
-            formatInfo =`
-                Валюта: *💵${currency.code}/UAH*, 
-                            Купівля / Продаж
-                **Monobank   ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
+          try {
+            if(enteredText == 'USD'){
+              let monoRate = foundCurrencyMonoBank.rateBuy;
+              let monoSale = foundCurrencyMonoBank.rateSell;
+              let privRate = parseFloat(foundCurrencPrivateBank.buy);
+              let privSale = parseFloat(foundCurrencPrivateBank.sale);
+              formatInfo =
+                ` Валюта: *💵${currency.code}/UAH*, 
+                  Купівля / Продаж
+                **Monobank  ** ⋅ *${monoRate.toFixed(2)}* / 🇺🇦*${monoSale.toFixed(2)}* 
                 **ПриватБанк** ⋅ *${privRate.toFixed(2)}* / 🇺🇦*${privSale.toFixed(2)}*
                 ` 
+            }
+          } catch (error) {
+            ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
+            console.log(error)
           }
           ctx.replyWithMarkdown(formatInfo);
-      } catch (error) {
-          ctx.reply('Спробуйте пізніше! Рекомендовано до 10 запитів');
-          console.log(error)
-      }
-
     }
-
+    
     if (ctx.message.text == 'НБУ'){
-
       const data = await fetch(process.env.NBY)
           .then(res => res.json())
           .then(data => {
+              let usdNum = data[24];
+              let eurNum = data[31];
+              let czkNum = data[21];
+              let chfNum = data[3];
 
             formatInfo = `Курс НБУ на *${JSON.stringify(data[25].exchangedate)}*
+              ${JSON.stringify(usdNum.cc)} 🇺🇸 -> 🇺🇦*${parseFloat(JSON.stringify(usdNum.rate)).toFixed(2)}*
+              ${JSON.stringify(eurNum.cc)} 🇪🇺 -> 🇺🇦*${parseFloat(JSON.stringify(eurNum.rate)).toFixed(2)}*
+              ${JSON.stringify(czkNum.cc)} 🇨🇭 -> 🇺🇦*${parseFloat(JSON.stringify(czkNum.rate)).toFixed(2)}*
+              ${JSON.stringify(chfNum.cc)} 🇨🇿 -> 🇺🇦*${parseFloat(JSON.stringify(chfNum.rate)).toFixed(2)}*
+            `
 
-             ${JSON.stringify(data[25].cc)} 🇺🇸 -> 🇺🇦*${JSON.stringify(data[25].rate)}*
-             ${JSON.stringify(data[32].cc)} 🇪🇺 -> 🇺🇦*${JSON.stringify(data[32].rate)}*
-             ${JSON.stringify(data[22].cc)} 🇨🇭 -> 🇺🇦*${JSON.stringify(data[22].rate)}*
-             ${JSON.stringify(data[4].cc)} 🇨🇿 -> 🇺🇦*${JSON.stringify(data[4].rate)}*
-                          `
             return ctx.replyWithMarkdown(formatInfo);
           })         
           .catch(error => console.log(error))
@@ -123,14 +142,18 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
     if (ctx.message.text == 'Метали'){
       const dataMetal = await fetch(process.env.NBY)
       .then(res => res.json())
-      .then(dataM => {
-        formatInfo = `*Курс банківських металів* НБУ станом на *${JSON.stringify(dataM[25].exchangedate)}* за 1 Oz (1 тройська унція = 31.10348 грам)
-                 
-                ${JSON.stringify(dataM[58].txt)} -> *${JSON.stringify(dataM[58].rate)}* UAH
-                ${JSON.stringify(dataM[59].txt)} -> *${JSON.stringify(dataM[59].rate)}* UAH
-                ${JSON.stringify(dataM[60].txt)} -> *${JSON.stringify(dataM[60].rate)}* UAH
-                ${JSON.stringify(dataM[61].txt)} -> *${JSON.stringify(dataM[61].rate)}* UAH   
-                `
+      .then(data => {
+        let gold = data[57];
+        let silver = data[58];
+        let platium = data[59];
+        let palladium = data[60];
+
+        formatInfo = `*Курс банківських металів* НБУ станом на *${JSON.stringify(data[25].exchangedate)}* за 1 Oz (1 тройська унція = 31.10348 грам)     
+          ${JSON.stringify(gold.txt)} -> *${JSON.stringify(gold.rate)}* UAH
+          ${JSON.stringify(silver.txt)} -> *${JSON.stringify(silver.rate)}* UAH
+          ${JSON.stringify(platium.txt)} -> *${JSON.stringify(platium.rate)}* UAH
+          ${JSON.stringify(palladium.txt)} -> *${JSON.stringify(palladium.rate)}* UAH   
+        `
         return ctx.replyWithMarkdown(formatInfo);
       })         
       .catch(error => console.log(error))
@@ -155,3 +178,4 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
   bot.launch();
 
   console.log('Бот старт');
+
